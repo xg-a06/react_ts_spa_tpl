@@ -43,7 +43,7 @@
     "zustand": "^4.0.0-rc.1"
   },
   "lint-staged": {
-    "src/*.{ts,tsx}": [
+    "src/**/*.{ts,tsx}": [
       "eslint --cache --fix",
       "prettier --write"
     ]

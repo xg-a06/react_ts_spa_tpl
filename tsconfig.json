@@ -10,12 +10,11 @@
     "skipLibCheck": true,
     "esModuleInterop": true,
     "typeRoots": [
-      "node_modules/@types",
-      "src/typings"
+      "node_modules/@types"
     ],
     "baseUrl": ".",
     "paths": {"@/*": [ "src/*" ]},
-    "types":["react/next", "react-dom/next","node","vite/client"],
+    "types":["react", "react-dom","node"],
     "allowSyntheticDefaultImports": true,
     "strict": true,
     "forceConsistentCasingInFileNames": true,
@@ -26,9 +25,12 @@
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx",
-    "plugins": [{ "name": "typescript-plugin-css-modules","options": {
-      "customMatcher": "^(?!.*\\.global).*\\.less$",
-    }}],
+    "plugins": [{
+      "name": "typescript-plugin-css-modules",
+      "options": {
+        "customMatcher": "^(?!.*\\.global).*\\.less$",
+      }
+    }],
   },
   "include": [
     "src"

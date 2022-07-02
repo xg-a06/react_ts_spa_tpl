@@ -1,16 +1,16 @@
-const { merge } =require('webpack-merge');
-const CopyWebpackPlugin =require( 'copy-webpack-plugin');
-const ProgressBarPlugin =require( 'progress-bar-webpack-plugin');
-const { BundleAnalyzerPlugin } =require( 'webpack-bundle-analyzer');
-const { CleanWebpackPlugin } =require( 'clean-webpack-plugin');
-const TerserPlugin from 'terser-webpack-plugin');
-const CssMinimizerPlugin =require( 'css-minimizer-webpack-plugin');
-const MiniCssExtractPlugin =require( 'mini-css-extract-plugin');
-const cssnano =require( 'cssnano');
-const chalk =require( 'chalk');
-const config =require( './config');
-const { subDir, getCssLoaders } =require( './utils');
-const baseConfig =require( './webpack.base.conf');
+const { merge } = require('webpack-merge');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
+const ProgressBarPlugin = require('progress-bar-webpack-plugin');
+const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const TerserPlugin = require('terser-webpack-plugin');
+const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const cssnano = require('cssnano');
+const chalk = require('chalk');
+const config = require('./config');
+const { subDir, getCssLoaders, resolve } = require('./utils');
+const baseConfig = require('./webpack.base.conf');
 
 const buildConfig = merge(baseConfig, {
   output: {

@@ -9,3 +9,4 @@ declare namespace NodeJS {
 //   const classes: { [key: string]: string };
 //   export default classes;
 // }
+declare module '*.mdx';

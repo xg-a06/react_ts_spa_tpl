@@ -26,10 +26,10 @@ const clearCode = node => {
   return true;
 };
 
-const analyze = async (markdownArr, sources) => {
-  let coms = '';
+const analyze = async (markdownArr, sources, filename) => {
+  let coms = ``;
   for (let [index, source] of Object.entries(sources)) {
-    const { code } = await transform(source, { filename: 'test.mdx' });
+    const { code } = await transform(source, { filename });
 
     const ast = Acorn.parse(code, {
       sourceType: 'module',
@@ -40,60 +40,73 @@ const analyze = async (markdownArr, sources) => {
       return clearCode(node) && index < endIndex;
     });
     const comCode = generate(ast).replace(/\S+\sTest\s?=/, 'return');
-    console.log(code);
-    console.log(comCode);
-    coms += `const com${index}=(()=>{${comCode}})();\r\n`;
+
+    coms += `(()=>{${comCode}})(),`;
   }
   return coms;
 };
 
 function mdxLoader(raw) {
-  transform(raw, { filename: this.resourcePath }).then(({ code }) => console.log(code));
-  // const filename = this.resourcePath;
-  //   const callback = this.async();
-  //   const md = new MarkdownIt({ html: false });
-  //   let result = md.render(raw);
-  //   result = result.trim('\n');
+  // transform(raw, { filename: this.resourcePath }).then(({ code }) => console.log(code));
+  const filename = this.resourcePath;
+  const callback = this.async();
+  const md = new MarkdownIt({ html: false });
+  let result = md.render(raw);
+  result = result.trim('\n');
 
-  //   const codeReg = /<pre[^>]*>(.|[\r\n])*?<\/pre>/g;
-  //   // result.split(codeReg) 有问题
-  //   let sources = result.match(codeReg);
+  const codeReg = /<pre[^>]*>(.|[\r\n])*?<\/pre>/g;
+  // result.split(codeReg) 有问题
+  let sources = result.match(codeReg);
 
-  //   const mdStr = result.replace(/<pre[^>]*>(.|[\r\n])*?<\/pre>/g, $0 => {
-  //     return '$empty$';
-  //   });
-  //   const mds = mdStr.split('$empty$').filter(i => i);
-  //   sources = sources.map(code => escape2Html(code.replace(/<pre>|<\/pre>|<code[^>]*>|<\/code>/g, '')));
+  const mdStr = result.replace(/<pre[^>]*>(.|[\r\n])*?<\/pre>/g, $0 => {
+    return '$empty$';
+  });
+  const tmp = mdStr.split('\n').reduce((ret, item) => {
+    ret += `\`${item}\`,`;
+    return ret;
+  }, '');
+  sources = sources.map(code => escape2Html(code.replace(/<pre>|<\/pre>|<code[^>]*>|<\/code>/g, '')));
+  analyze(mdStr, sources, filename).then(coms => {
+    const code = `
+    const mds=[${tmp}];
+    const coms=[${coms}];
 
-  //   analyze(mds, sources).then(coms => {
-  //     // const code = `
-  //     //
-  //     //   const App={
-  //     //       components:[com0,com1]
-  //     //     }
-  //     //     _c = App;
-  //     //     var _default = App;
-  //     //     exports.default = _default;
+    import React from 'react';
+    //
+    let demoIndex=0;
+    const Doc = props => {
+      const {mds=[],demos=[]}=props;
+      console.log(props)
+      return <div>{props.mds.map((content,index)=>{
+        if(content==='$empty$'){
+          const Demp=demos[demoIndex++];
+          return <Demp  key={index}/>;
+        }
+        return <div key={index} dangerouslySetInnerHTML={{ __html: content }}></div>
+      })}</div>;
+    };
 
-  //     //     var _c;
+    const App = ()=> {
+      console.log(mds)
+      return <Doc demos={coms} mds={mds}/>;
+    };
+    export default App;
+      `;
+    //     const code = `
+    // ${coms}
+    //       import React from 'react';
+    //         const tmp={
+    //               components:[com0,com1]
+    //             }
+    //       const App=()=>{
+    //         console.log(tmp);
+    //         return <div>11111</div>
+    //       }
 
-  //     //     $RefreshReg$(_c, "App");
-  //     // `;
-  //     const code = `
-  // ${coms}
-  //       import React from 'react';
-  //         const tmp={
-  //               components:[com0,com1]
-  //             }
-  //       const App=()=>{
-  //         console.log(tmp);
-  //         return <div>11111</div>
-  //       }
-
-  //       export default App;
-  //     `;
-  //     callback(null, code);
-  //   });
+    //       export default App;
+    //     `;
+    callback(null, code);
+  });
 
   // transform(source, { filename }).then(({ code }) => {
 

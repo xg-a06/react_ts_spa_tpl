@@ -27,12 +27,21 @@ const baseConfig = {
     rules: [
       {
         test: /\.js$/,
-        include: [
-          resolve('node_modules/zustand/esm/middleware.js'),
-          resolve('node_modules/react-query/es/devtools/devtools.js'),
-          resolve('node_modules/react-query/es/devtools/utils.js'),
-        ],
+        include: [resolve('node_modules/zustand/esm/middleware.js'), resolve('node_modules/react-query/es/devtools/devtools.js'), resolve('node_modules/react-query/es/devtools/utils.js')],
         use: ['babel-loader?cacheDirectory=true'],
+      },
+      {
+        test: /\.mdx$/,
+        include: resolve('src'),
+        use: [
+          'babel-loader?cacheDirectory=true',
+          {
+            loader: resolve('build/loader/mdxloader'),
+            options: {
+              /* jsxImportSource: …, otherOptions… */
+            },
+          },
+        ],
       },
       {
         test: /\.ts[x]?$/,

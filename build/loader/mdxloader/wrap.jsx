@@ -1,15 +1,8 @@
 import React from 'react';
-const TTT = () => <span>child</span>;
 
-const Wrap = () => <div>{children}</div>;
-
-const Doc = () => {
-  return (
-    <Wrap>
-      <TTT />
-      <TTT />
-    </Wrap>
-  );
+const Doc = props => {
+  console.log(props);
+  return <div>11111</div>;
 };
 
 export default Doc;

@@ -1,6 +1,22 @@
+const path = require('path');
+
 const config = {
-  buildDetail: true,
+  buildDetail: false,
   devServer: {
+    // static: {
+    //   directory: path.resolve(__dirname, '../dist'),
+    // },
+    client: {
+      // Can be `string`:
+      //
+      // To get protocol/hostname/port from browser
+      // webSocketURL: 'auto://0.0.0.0:0/ws'
+      // webSocketURL: {
+      //   hostname: '0.0.0.0',
+      //   pathname: '/ws',
+      //   port: 8789,
+      // },
+    },
     port: 2233,
     hot: true,
     host: '0.0.0.0',
@@ -15,7 +31,7 @@ const config = {
     },
     proxy: {
       '/api': {
-        target: 'http://10.0.70.41:8000',
+        target: 'http://172.16.7.22:8000/',
         changeOrigin: true,
         // pathRewrite: {
         //   '^/xxx': '/',

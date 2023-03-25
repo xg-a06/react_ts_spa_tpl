@@ -31,14 +31,6 @@ const babelConfig = {
     '@babel/plugin-proposal-partial-application',
     ['@babel/plugin-proposal-pipeline-operator', { proposal: 'minimal' }],
     '@babel/plugin-proposal-throw-expressions',
-    [
-      'import',
-      {
-        libraryName: 'antd',
-        libraryDirectory: 'es',
-        style: 'css',
-      },
-    ],
   ],
 };
 

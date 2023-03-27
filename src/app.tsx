@@ -9,15 +9,13 @@ interface FallbackProps {
   resetErrorBoundary: (...args: Array<unknown>) => void;
 }
 
-const ErrorFallback = ({ error, resetErrorBoundary }: FallbackProps) => {
-  return (
-    <div role='alert'>
-      <p>Something went wrong:</p>
-      <pre>{error.message}</pre>
-      <button onClick={resetErrorBoundary}>Try again</button>
-    </div>
-  );
-};
+const ErrorFallback = ({ error, resetErrorBoundary }: FallbackProps) => (
+  <div role="alert">
+    <p>Something went wrong:</p>
+    <pre>{error.message}</pre>
+    <button onClick={resetErrorBoundary}>Try again</button>
+  </div>
+);
 
 const App = () => {
   const queryClient = new QueryClient({
@@ -29,21 +27,19 @@ const App = () => {
   });
 
   return (
-    <div>
-      <ErrorBoundary
-        FallbackComponent={ErrorFallback}
-        onReset={() => {
-          console.log('重试');
-        }}
-      >
-        <Suspense fallback={<div>loading...</div>}>
-          <QueryClientProvider client={queryClient}>
-            <Router />
-            <ReactQueryDevtools />
-          </QueryClientProvider>
-        </Suspense>
-      </ErrorBoundary>
-    </div>
+    <ErrorBoundary
+      FallbackComponent={ErrorFallback}
+      onReset={() => {
+        console.log('重试');
+      }}
+    >
+      <Suspense fallback={<div>loading...</div>}>
+        <QueryClientProvider client={queryClient}>
+          <Router />
+          <ReactQueryDevtools />
+        </QueryClientProvider>
+      </Suspense>
+    </ErrorBoundary>
   );
 };
 

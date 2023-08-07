@@ -18,7 +18,7 @@ interface Store {
   toggleFilter(filter: Filter): void;
 }
 
-let id = 1;
+let defaultId = 1;
 
 const model = createModel<Store>({
   key: 'app',
@@ -27,16 +27,16 @@ const model = createModel<Store>({
   addTodo(todo) {
     this.todos.push({
       ...todo,
-      id: id++,
+      id: defaultId++,
     });
   },
   removeTodo(id) {
     this.todos = this.todos.filter(todo => todo.id !== id);
   },
   updateTodo(id, value) {
-    const todo = this.todos.find((todo: any) => todo.id === id);
-    if (todo) {
-      todo.completed = value;
+    const ret = this.todos.find(todo => todo.id === id);
+    if (ret) {
+      ret.completed = value;
     }
   },
   toggleFilter(filter) {

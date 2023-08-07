@@ -1,28 +1,26 @@
-import create, { UseBoundStore, StoreApi, StateCreator } from 'zustand';
+import { create, UseBoundStore, StoreApi, StateCreator } from 'zustand';
 import { devtools } from 'zustand/middleware';
 import produce from 'immer';
 
-interface Config {
+type CustomType<T> = { [s: string]: T } | ArrayLike<T>;
+
+interface Config extends Record<string, any> {
   key: string;
-  [key: string]: any;
 }
 
-const wrap = <T extends Config>(
-  creater: StateCreator<T, [] | [['zustand/devtools', never]], [], T>,
-  options: { name: string } | undefined
-) => {
+const isFunction = (value: unknown): value is () => void => typeof value === 'function';
+
+const wrap = <T extends Config>(creater: StateCreator<T, [] | [['zustand/devtools', never]], [], T>, options: { name: string } | undefined) => {
   if (process.env.NODE_ENV === 'development') {
     return create(devtools<T>(creater, options));
   }
   return create<T>(creater);
 };
 
-const convertModel = <T>(config: T, set: any): T => {
-  const init = Object.entries(config).reduce((tmp, [key, value]) => {
-    if (typeof value === 'function') {
-      tmp[key] = (...args: Parameters<typeof value>) => {
-        return set(produce((state: T) => value.apply(state, args)));
-      };
+const convertModel = <T extends CustomType<T>>(config: T, set: any): T => {
+  const init = Object.entries<T>(config).reduce((tmp, [key, value]) => {
+    if (isFunction(value)) {
+      tmp[key] = (...args: Parameters<typeof value>) => set(produce((state: T) => value.apply(state, args)));
       return tmp;
     }
     tmp[key] = value;
@@ -33,26 +31,18 @@ const convertModel = <T>(config: T, set: any): T => {
 };
 
 const createModel = <T extends Config>(config: T) => {
-  const model = wrap<T>(
-    (set) => {
-      return convertModel(config, set);
-    },
-    { name: config.key }
-  );
+  const model = wrap<T>(set => convertModel(config, set), { name: config.key });
   return model;
 };
 
-export const useModel = <T extends Config>(
-  useStore: UseBoundStore<StoreApi<T>>
-) => {
-  return new Proxy(
+export const useModel = <T extends Config>(useStore: UseBoundStore<StoreApi<T>>) =>
+  new Proxy(
     {},
     {
       get(_, prop: string) {
         return useStore((state: T) => state[prop]);
       },
-    }
+    },
   ) as T;
-};
 
 export default createModel;
